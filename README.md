@@ -1,4 +1,8 @@
-# Scala-Pact [![Build Status](https://travis-ci.com/ITV/scala-pact.svg?branch=master)](https://travis-ci.com/ITV/scala-pact)
+# Close Enough
+
+This is _not_ Scala-Pact. :-)
+
+---
 
 A Consumer Driven Contract testing library for Scala and [ScalaTest](http://www.scalatest.org/) that follows the [Pact](https://docs.pact.io/) standard.
 
