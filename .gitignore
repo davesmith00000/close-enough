@@ -19,6 +19,11 @@ metals.sbt
 .DS_Store
 /log
 *.html
+node_modules
+
+# Direnc
+.envrc
+.direnv
 
 # IDE
 .bsp

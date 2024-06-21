@@ -1,25 +1,22 @@
-lazy val scalaVersion212: String = "2.12.14"
-lazy val scalaVersion213: String = "2.13.6"
-lazy val scalaVersion3: String   = "3.0.1"
-lazy val supportedScalaVersions  = List(scalaVersion212, scalaVersion213)
 
-ThisBuild / scalaVersion := scalaVersion212
+lazy val scalaVersion213: String = "2.13.14"
+lazy val scalaVersion3: String   = "3.3.3"
+lazy val supportedScalaVersions  = List(scalaVersion213)
+
+ThisBuild / scalaVersion := scalaVersion213
 
 lazy val commonSettings = Seq(
-  organization := "com.itv",
+  organization := "davesmith00000",
   crossScalaVersions := supportedScalaVersions,
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.9" % "test"
   ),
   Test / parallelExecution := false,
-//  javaOptions in Test ++= Seq(
-//    "-XX:+UnlockCommercialFeatures", "-XX:+FlightRecorder"
-//  ),
   assembly / test := {}
 )
 
 lazy val scala212OnlySettings = Seq(
-  crossScalaVersions := Seq(scalaVersion212)
+  crossScalaVersions := Seq(scalaVersion213)
 )
 
 lazy val scala3Settings = Seq(
@@ -30,12 +27,9 @@ lazy val mockSettings = Seq(
   libraryDependencies += "org.scalamock" %% "scalamock" % "5.1.0" % Test
 )
 
-// Everything blows up if the plugin uses scala-xml 2.x
 val scalaXmlVersion =
   Def.setting(
-    if (scalaVersion.value.startsWith("2.12")) "1.3.0"
-    else
-      "2.0.1"
+    "2.0.1"
   )
 
 lazy val publishSettings = Seq(
@@ -53,7 +47,7 @@ lazy val publishSettings = Seq(
     false
   },
   pomExtra :=
-    <url>https://github.com/ITV/scala-pact</url>
+    <url>https://github.com/davesmith00000/close-enough</url>
       <licenses>
         <license>
           <name>ITV-OSS</name>
@@ -65,14 +59,8 @@ lazy val publishSettings = Seq(
         <developer>
           <id>davesmith00000</id>
           <name>David Smith</name>
-          <organization>ITV</organization>
-          <organizationUrl>http://www.itv.com</organizationUrl>
-        </developer>
-        <developer>
-          <id>jbwheatley</id>
-          <name>Jack Wheatley</name>
-          <organization>ITV</organization>
-          <organizationUrl>http://www.itv.com</organizationUrl>
+          <organization>davesmith00000</organization>
+          <organizationUrl>https://github.com/davesmith00000</organizationUrl>
         </developer>
       </developers>
 )
@@ -102,36 +90,6 @@ lazy val core =
     )
     .dependsOn(shared)
 
-lazy val http4s021 =
-  (project in file("scalapact-http4s-0-21"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "scalapact-http4s-0-21",
-      libraryDependencies ++= Seq(
-        "org.http4s"            %% "http4s-blaze-server" % "0.21.29" exclude ("org.scala-lang.modules", "scala-xml"),
-        "org.http4s"            %% "http4s-blaze-client" % "0.21.29" exclude ("org.scala-lang.modules", "scala-xml"),
-        "org.http4s"            %% "http4s-dsl"          % "0.21.29",
-        "com.github.tomakehurst" % "wiremock"            % "2.27.2" % "test"
-      )
-    )
-    .dependsOn(shared)
-
-lazy val http4s022 =
-  (project in file("scalapact-http4s-0-22"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "scalapact-http4s-0-22",
-      libraryDependencies ++= Seq(
-        "org.http4s"            %% "http4s-blaze-server" % "0.22.5" exclude ("org.scala-lang.modules", "scala-xml"),
-        "org.http4s"            %% "http4s-blaze-client" % "0.22.5" exclude ("org.scala-lang.modules", "scala-xml"),
-        "org.http4s"            %% "http4s-dsl"          % "0.22.5",
-        "com.github.tomakehurst" % "wiremock"            % "2.27.2" % "test"
-      )
-    )
-    .dependsOn(shared)
-
 lazy val http4s023 =
   (project in file("scalapact-http4s-0-23"))
     .settings(commonSettings: _*)
@@ -158,34 +116,6 @@ lazy val testShared =
     )
     .dependsOn(shared)
 
-lazy val argonaut62 =
-  (project in file("scalapact-argonaut-6-2"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "scalapact-argonaut-6-2",
-      libraryDependencies ++= Seq(
-        "io.argonaut" %% "argonaut" % "6.2.5"
-      )
-    )
-    .dependsOn(shared)
-    .dependsOn(testShared % "test->compile")
-
-lazy val circe13 =
-  (project in file("scalapact-circe-0-13"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "scalapact-circe-0-13",
-      libraryDependencies ++= Seq(
-        "io.circe" %% "circe-core",
-        "io.circe" %% "circe-generic",
-        "io.circe" %% "circe-parser"
-      ).map(_ % "0.13.0")
-    )
-    .dependsOn(shared)
-    .dependsOn(testShared % "test->compile")
-
 lazy val circe14 =
   (project in file("scalapact-circe-0-14"))
     .settings(commonSettings: _*)
@@ -201,42 +131,6 @@ lazy val circe14 =
     )
     .dependsOn(shared)
     .dependsOn(testShared % "test->compile")
-
-lazy val pluginShared =
-  (project in file("sbt-scalapact-shared"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "sbt-scalapact-shared"
-    )
-    .dependsOn(core)
-    .settings(scala212OnlySettings)
-
-lazy val plugin =
-  (project in file("sbt-scalapact"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "sbt-scalapact",
-      sbtPlugin := true
-    )
-    .dependsOn(pluginShared)
-    .dependsOn(circe14)
-    .dependsOn(http4s023)
-    .settings(scala212OnlySettings)
-
-lazy val pluginNoDeps =
-  (project in file("sbt-scalapact-nodeps"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "sbt-scalapact-nodeps",
-      sbtPlugin := true
-    )
-    .dependsOn(pluginShared)
-    .dependsOn(circe14 % "provided")
-    .dependsOn(http4s023 % "provided")
-    .settings(scala212OnlySettings)
 
 lazy val framework =
   (project in file("scalapact-scalatest"))
@@ -266,22 +160,6 @@ lazy val frameworkWithDeps =
     .dependsOn(circe14)
     .dependsOn(http4s023)
 
-lazy val standalone =
-  (project in file("scalapact-standalone-stubber"))
-    .settings(commonSettings: _*)
-    .settings(
-      name := "scalapact-standalone-stubber",
-      publish := {},
-      assembly / assemblyJarName := "pactstubber.jar",
-      libraryDependencies ++= Seq(
-        "ch.qos.logback" % "logback-classic" % "1.2.6"
-      ),
-      publish / skip := true
-    )
-    .dependsOn(core)
-    .dependsOn(circe13)
-    .dependsOn(http4s021)
-
 lazy val pactSpec =
   (project in file("pact-spec-tests"))
     .settings(commonSettings: _*)
@@ -291,20 +169,12 @@ lazy val pactSpec =
     )
     .settings(scala212OnlySettings)
     .dependsOn(core)
-    .dependsOn(argonaut62)
+    .dependsOn(circe14)
 
-// TODO: replace roshttp so we can run this on newer scala versions
 lazy val testsWithDeps =
   (project in file("tests-with-deps"))
     .settings(commonSettings: _*)
     .settings(
-      libraryDependencies ++= Seq(
-        "org.scalaj"            %% "scalaj-http"   % "2.4.2"  % "test",
-        "org.json4s"            %% "json4s-native" % "4.0.2"  % "test",
-        "com.github.tomakehurst" % "wiremock"      % "2.27.2" % "test",
-        "fr.hmil"               %% "roshttp"       % "2.1.0"  % "test",
-        "io.argonaut"           %% "argonaut"      % "6.3.7"
-      ),
       publish / skip := true
     )
     .settings(scala212OnlySettings)
@@ -334,10 +204,10 @@ lazy val scalaPactProject =
       publish / skip := true,
       crossScalaVersions := Nil
     )
-    .aggregate(shared, core, pluginShared, plugin, pluginNoDeps, framework, testShared)
-    .aggregate(http4s021, http4s022, http4s023)
-    .aggregate(argonaut62, circe13, circe14)
-    .aggregate(standalone, frameworkWithDeps)
+    .aggregate(shared, core, framework, testShared)
+    .aggregate(http4s023)
+    .aggregate(circe14)
+    .aggregate(frameworkWithDeps)
     .aggregate(docs)
     .aggregate(pactSpec, testsWithDeps)
 

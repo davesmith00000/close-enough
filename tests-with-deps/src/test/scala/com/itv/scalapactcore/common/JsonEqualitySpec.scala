@@ -1,7 +1,6 @@
 package com.itv.scalapactcore.common
 
-import argonaut._
-import Argonaut._
+import io.circe._
 import com.itv.scalapact.circe14.JsonConversionFunctions
 import com.itv.scalapact.shared.matchir.IrNodeEqualityResult.{IrNodesEqual, IrNodesNotEqual}
 import com.itv.scalapact.shared.matchir._
