@@ -15,10 +15,6 @@ lazy val commonSettings = Seq(
   assembly / test := {}
 )
 
-lazy val scala212OnlySettings = Seq(
-  crossScalaVersions := Seq(scalaVersion213)
-)
-
 lazy val scala3Settings = Seq(
   crossScalaVersions += scalaVersion3
 )
@@ -132,34 +128,6 @@ lazy val circe14 =
     .dependsOn(shared)
     .dependsOn(testShared % "test->compile")
 
-lazy val framework =
-  (project in file("scalapact-scalatest"))
-    .settings(commonSettings: _*)
-    .settings(scala3Settings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "scalapact-scalatest",
-      Compile / packageBin / mappings ~= {
-        _.filterNot { case (_, fileName) => fileName == "logback.xml" || fileName == "log4j.properties" }
-      }
-    )
-    .dependsOn(core)
-
-lazy val frameworkWithDeps =
-  (project in file("scalapact-scalatest-suite"))
-    .settings(commonSettings: _*)
-    .settings(scala3Settings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "scalapact-scalatest-suite",
-      Compile / packageBin / mappings ~= {
-        _.filterNot { case (_, fileName) => fileName == "logback.xml" || fileName == "log4j.properties" }
-      }
-    )
-    .dependsOn(framework)
-    .dependsOn(circe14)
-    .dependsOn(http4s023)
-
 lazy val pactSpec =
   (project in file("pact-spec-tests"))
     .settings(commonSettings: _*)
@@ -167,7 +135,6 @@ lazy val pactSpec =
       name := "pact-spec-tests",
       publish / skip := true
     )
-    .settings(scala212OnlySettings)
     .dependsOn(core)
     .dependsOn(circe14)
 
@@ -177,8 +144,7 @@ lazy val testsWithDeps =
     .settings(
       publish / skip := true
     )
-    .settings(scala212OnlySettings)
-    .dependsOn(framework)
+    .dependsOn(core)
     .dependsOn(circe14)
     .dependsOn(http4s023)
 
@@ -195,7 +161,6 @@ lazy val docs =
       Paradox / sourceDirectory := sourceDirectory.value / "main" / "paradox",
       publish / skip := true
     )
-    .settings(scala212OnlySettings)
 
 lazy val scalaPactProject =
   (project in file("."))
@@ -204,10 +169,9 @@ lazy val scalaPactProject =
       publish / skip := true,
       crossScalaVersions := Nil
     )
-    .aggregate(shared, core, framework, testShared)
+    .aggregate(shared, core, testShared)
     .aggregate(http4s023)
     .aggregate(circe14)
-    .aggregate(frameworkWithDeps)
     .aggregate(docs)
     .aggregate(pactSpec, testsWithDeps)
 
