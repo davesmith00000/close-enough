@@ -1,3 +1,3 @@
-package com.itv.scalapact.shared
+// package com.itv.scalapact.shared
 
-final case class HALIndex(_links: Links) extends AnyVal
+// final case class HALIndex(_links: Map[String, Link]) extends AnyVal

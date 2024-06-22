@@ -1,23 +1,23 @@
 package com.itv.scalapact.shared
 
-import com.itv.scalapact.shared.http.SslContextMap
+// import com.itv.scalapact.shared.http.SslContextMap
 
 sealed trait Contract {
   def consumer: PactActor
   def provider: PactActor
 }
 
-final case class JvmPact(consumer: PactActor, provider: PactActor, rawContents: String) extends Contract
+// final case class JvmPact(consumer: PactActor, provider: PactActor, rawContents: String) extends Contract
 
 final case class Pact(
     provider: PactActor,
     consumer: PactActor,
     interactions: List[Interaction],
-    _links: Option[Links],
+    _links: Option[Map[String, Link]],
     metadata: Option[PactMetaData]
 ) extends Contract {
 
-  def withoutSslHeader: Pact = copy(interactions = interactions.map(_.withoutSslHeader))
+  // def withoutSslHeader: Pact = copy(interactions = interactions.map(_.withoutSslHeader))
 
   def renderAsString: String =
     s"""Pact
@@ -43,8 +43,8 @@ final case class Interaction(
     response: InteractionResponse
 ) {
 
-  def withoutSslHeader: Interaction =
-    copy(request = request.copy(headers = request.headers.map(_ - SslContextMap.sslContextHeaderName)))
+  // def withoutSslHeader: Interaction =
+  //   copy(request = request.copy(headers = request.headers.map(_ - SslContextMap.sslContextHeaderName)))
 
   def renderAsString: String =
     s"""Interaction
@@ -64,20 +64,20 @@ final case class InteractionRequest(
     body: Option[String],
     matchingRules: Option[Map[String, MatchingRule]]
 ) {
-  def withoutSslContextHeader: InteractionRequest = copy(headers = headers.map(_ - SslContextMap.sslContextHeaderName))
+  // def withoutSslContextHeader: InteractionRequest = copy(headers = headers.map(_ - SslContextMap.sslContextHeaderName))
 
-  def sslContextName: Option[String] = headers.flatMap(_.get(SslContextMap.sslContextHeaderName))
+  // def sslContextName: Option[String] = headers.flatMap(_.get(SslContextMap.sslContextHeaderName))
 
   def renderAsString: String =
     s"""Request           [${method.getOrElse("<missing method>")}]
        |  path:           [${path.getOrElse("<missing path>")}]
        |  query:          [${query.getOrElse("<missing path>")}]
        |  headers:        [${headers
-      .map(_.toList.map(p => p._1 + "=" + p._2).mkString(",\n                   "))
-      .getOrElse("")}]
+        .map(_.toList.map(p => p._1 + "=" + p._2).mkString(",\n                   "))
+        .getOrElse("")}]
        |  matching rules: [${matchingRules
-      .map(_.toList.map(p => p._1 + " -> (" + p._2.renderAsString + ")").mkString(",\n                   "))
-      .getOrElse("")}]
+        .map(_.toList.map(p => p._1 + " -> (" + p._2.renderAsString + ")").mkString(",\n                   "))
+        .getOrElse("")}]
        |  body:
        |${body.getOrElse("[no body]")}
        |
@@ -94,11 +94,11 @@ final case class InteractionResponse(
   def renderAsString: String =
     s"""Response          [${status.map(_.toString).getOrElse("<missing status>")}]
        |  headers:        [${headers
-      .map(_.toList.map(p => p._1 + "=" + p._2).mkString(",\\n                   \""))
-      .getOrElse("")}]
+        .map(_.toList.map(p => p._1 + "=" + p._2).mkString(",\\n                   \""))
+        .getOrElse("")}]
        |  matching rules: [${matchingRules
-      .map(_.toList.map(p => p._1 + " -> (" + p._2.renderAsString + ")").mkString(",\n                   "))
-      .getOrElse("")}]
+        .map(_.toList.map(p => p._1 + " -> (" + p._2.renderAsString + ")").mkString(",\n                   "))
+        .getOrElse("")}]
        |  body:
        |${body.getOrElse("[no body]")}
        |

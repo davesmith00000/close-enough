@@ -1,13 +1,13 @@
 package com.itv.scalapact.circe14
 
 import cats.syntax.functor._
-import com.itv.scalapact.shared.Notice._
+// import com.itv.scalapact.shared.Notice._
 import com.itv.scalapact.shared._
 import io.circe.generic.semiauto.{deriveCodec, deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe._
 
-import scala.util.{Failure, Success, Try}
+// import scala.util.{Failure, Success, Try}
 
 object PactImplicits {
 
@@ -101,64 +101,64 @@ object PactImplicits {
       provider     <- cur.get[PactActor]("provider")
       consumer     <- cur.get[PactActor]("consumer")
       interactions <- cur.get[List[Interaction]]("interactions")
-      _links       <- cur.downField("_links").as[Option[Links]]
+      _links       <- cur.downField("_links").as[Option[Map[String, Link]]]
       metadata     <- cur.get[Option[PactMetaData]]("metadata")
     } yield Pact(provider, consumer, interactions, _links, metadata)
   }
 
-  implicit val jvmPactDecoder: Decoder[JvmPact] = Decoder.instance { cur =>
-    for {
-      consumer <- cur.get[PactActor]("consumer")
-      provider <- cur.get[PactActor]("provider")
-      body = cur.value.noSpaces
-    } yield JvmPact(consumer, provider, body)
-  }
+  // implicit val jvmPactDecoder: Decoder[JvmPact] = Decoder.instance { cur =>
+  //   for {
+  //     consumer <- cur.get[PactActor]("consumer")
+  //     provider <- cur.get[PactActor]("provider")
+  //     body = cur.value.noSpaces
+  //   } yield JvmPact(consumer, provider, body)
+  // }
 
   implicit val scalaPactEncoder: Encoder[Pact] = deriveEncoder
 
-  implicit val jvmPactEncoder: Encoder[JvmPact] = Encoder.instance { jvmPact =>
-    io.circe.parser.parse(jvmPact.rawContents) match {
-      case Right(value) => value
-      case Left(error)  => throw new Exception(s"Generated pact is not valid json: $error")
-    }
-  }
+  // implicit val jvmPactEncoder: Encoder[JvmPact] = Encoder.instance { jvmPact =>
+  //   io.circe.parser.parse(jvmPact.rawContents) match {
+  //     case Right(value) => value
+  //     case Left(error)  => throw new Exception(s"Generated pact is not valid json: $error")
+  //   }
+  // }
 
-  implicit val halIndexDecoder: Decoder[HALIndex] = Decoder.instance { cur =>
-    cur.downField("_links").as[Links].map(HALIndex.apply)
-  }
+  // implicit val halIndexDecoder: Decoder[HALIndex] = Decoder.instance { cur =>
+  //   cur.downField("_links").as[Map[String, Link]].map(HALIndex.apply)
+  // }
 
-  implicit val embeddedPactForVerificationDecoder: Decoder[PactForVerification] = deriveDecoder
-  implicit val embeddedPactsForVerificationDecoder: Decoder[EmbeddedPactsForVerification] = Decoder.instance { cur =>
-    cur.get[List[PactForVerification]]("pacts").map(EmbeddedPactsForVerification.apply)
-  }
+  // implicit val embeddedPactForVerificationDecoder: Decoder[PactForVerification] = deriveDecoder
+  // implicit val embeddedPactsForVerificationDecoder: Decoder[EmbeddedPactsForVerification] = Decoder.instance { cur =>
+  //   cur.get[List[PactForVerification]]("pacts").map(EmbeddedPactsForVerification.apply)
+  // }
 
-  implicit val pendingStateNoticeDecoder: Decoder[Notice] = Decoder.instance { cur =>
-    lazy val pattern = "after_verification:success_(true|false)_published_(true|false)".r
-    cur.get[String](s"text").flatMap { text =>
-      cur.get[Option[String]]("when").flatMap {
-        case Some("before_verification") => Right(BeforeVerificationNotice(text))
-        case Some(pattern(success, published)) =>
-          (for {
-            suc <- Try(success.toBoolean)
-            pub <- Try(published.toBoolean)
-          } yield AfterVerificationNotice(text, suc, pub)) match {
-            case Failure(err)   => Left(DecodingFailure.fromThrowable(err, cur.history))
-            case Success(value) => Right(value)
-          }
-        case _ => Right(SimpleNotice(text))
-      }
-    }
-  }
+  // implicit val pendingStateNoticeDecoder: Decoder[Notice] = Decoder.instance { cur =>
+  //   lazy val pattern = "after_verification:success_(true|false)_published_(true|false)".r
+  //   cur.get[String](s"text").flatMap { text =>
+  //     cur.get[Option[String]]("when").flatMap {
+  //       case Some("before_verification") => Right(BeforeVerificationNotice(text))
+  //       case Some(pattern(success, published)) =>
+  //         (for {
+  //           suc <- Try(success.toBoolean)
+  //           pub <- Try(published.toBoolean)
+  //         } yield AfterVerificationNotice(text, suc, pub)) match {
+  //           case Failure(err)   => Left(DecodingFailure.fromThrowable(err, cur.history))
+  //           case Success(value) => Right(value)
+  //         }
+  //       case _ => Right(SimpleNotice(text))
+  //     }
+  //   }
+  // }
 
-  implicit val verificationPropertiesDecoder: Decoder[VerificationProperties] = Decoder.instance { cur =>
-    for {
-      pending <- cur.getOrElse[Boolean]("pending")(false)
-      notices <- cur.get[List[Notice]]("notices")
-    } yield VerificationProperties(pending, notices)
-  }
+  // implicit val verificationPropertiesDecoder: Decoder[VerificationProperties] = Decoder.instance { cur =>
+  //   for {
+  //     pending <- cur.getOrElse[Boolean]("pending")(false)
+  //     notices <- cur.get[List[Notice]]("notices")
+  //   } yield VerificationProperties(pending, notices)
+  // }
 
-  implicit val pactsForVerificationDecoder: Decoder[PactsForVerificationResponse] = deriveDecoder
+  // implicit val pactsForVerificationDecoder: Decoder[PactsForVerificationResponse] = deriveDecoder
 
-  implicit val consumerVersionSelectorEncoder: Encoder[ConsumerVersionSelector]         = deriveEncoder
-  implicit val pactsForVerificationRequestEncoder: Encoder[PactsForVerificationRequest] = deriveEncoder
+  // implicit val consumerVersionSelectorEncoder: Encoder[ConsumerVersionSelector]         = deriveEncoder
+  // implicit val pactsForVerificationRequestEncoder: Encoder[PactsForVerificationRequest] = deriveEncoder
 }

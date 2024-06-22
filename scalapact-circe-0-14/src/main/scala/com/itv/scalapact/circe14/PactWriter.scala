@@ -1,15 +1,19 @@
 package com.itv.scalapact.circe14
 
-import com.itv.scalapact.shared.{JvmPact, Contract, PactMetaData, PactsForVerificationRequest, Pact, VersionMetaData}
+// import com.itv.scalapact.shared.{JvmPact, Contract, PactMetaData, PactsForVerificationRequest, Pact, VersionMetaData}
 import com.itv.scalapact.shared.json.IPactWriter
 import io.circe.syntax._
+import com.itv.scalapact.shared.Pact
+import com.itv.scalapact.shared.PactMetaData
+import com.itv.scalapact.shared.Contract
+import com.itv.scalapact.shared.VersionMetaData
 
 class PactWriter extends IPactWriter {
   import PactImplicits._
 
   def pactToJsonString(pact: Contract, scalaPactVersion: String): String =
     pact match {
-      case p: JvmPact => p.asJson.spaces2
+      // case p: JvmPact => p.asJson.spaces2
       case p: Pact =>
         val updatedMetaData: Option[PactMetaData] =
           p.metadata.orElse {
@@ -23,6 +27,6 @@ class PactWriter extends IPactWriter {
         p.copy(metadata = updatedMetaData).asJson.deepDropNullValues.spaces2
     }
 
-  def pactsForVerificationRequestToJsonString(request: PactsForVerificationRequest): String =
-    request.asJson.deepDropNullValues.spaces2
+  // def pactsForVerificationRequestToJsonString(request: PactsForVerificationRequest): String =
+  //   request.asJson.deepDropNullValues.spaces2
 }

@@ -1,7 +1,6 @@
 package com.itv.scalapact.circe14
 
 import com.itv.scalapact.shared.utils.ColourOutput._
-import com.itv.scalapact.shared.json.IJsonConversionFunctions
 import com.itv.scalapact.shared.matchir.IrNodePath.IrNodePathEmpty
 import com.itv.scalapact.shared.matchir.MatchIrConstants.{rootNodeLabel, unnamedNodeLabel}
 import com.itv.scalapact.shared.matchir._
@@ -9,7 +8,7 @@ import com.itv.scalapact.shared.utils.PactLogger
 import io.circe._
 import io.circe.parser._
 
-object JsonConversionFunctions extends IJsonConversionFunctions {
+object JsonConversionFunctions {
 
   def fromJSON(jsonString: String): Option[IrNode] =
     parse(jsonString).toOption.flatMap { json =>

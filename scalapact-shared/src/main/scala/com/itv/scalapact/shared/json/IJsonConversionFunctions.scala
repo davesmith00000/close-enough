@@ -1,7 +1,7 @@
-package com.itv.scalapact.shared.json
+// package com.itv.scalapact.shared.json
 
-import com.itv.scalapact.shared.matchir.IrNode
+// import com.itv.scalapact.shared.matchir.IrNode
 
-trait IJsonConversionFunctions {
-  def fromJSON(jsonString: String): Option[IrNode]
-}
+// trait IJsonConversionFunctions {
+//   def fromJSON(jsonString: String): Option[IrNode]
+// }
