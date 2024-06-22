@@ -1,10 +1,12 @@
-package com.itv.scalapact.circe14
+package pactspec.util
 
 import com.itv.scalapact.shared._
 import com.itv.scalapact.shared.json.IPactReader
 import com.itv.scalapact.shared.matchir.IrNode
 import io.circe.Decoder
 import io.circe.parser._
+import pactspec.util.PactImplicits
+import com.itv.scalapact.circe14.JsonConversionFunctions
 
 class PactReader extends IPactReader {
   import PactImplicits._

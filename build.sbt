@@ -3,6 +3,8 @@ lazy val scalaVersion213: String = "2.13.14"
 lazy val scalaVersion3: String   = "3.3.3"
 lazy val supportedScalaVersions  = List(scalaVersion213)
 
+lazy val circeVersion = "0.14.1"
+
 ThisBuild / scalaVersion := scalaVersion213
 
 lazy val commonSettings = Seq(
@@ -86,16 +88,6 @@ lazy val core =
     )
     .dependsOn(shared)
 
-lazy val testShared =
-  (project in file("scalapact-test-shared"))
-    .settings(commonSettings: _*)
-    .settings(scala3Settings: _*)
-    .settings(
-      name := "scalapact-test-shared",
-      publish / skip := true
-    )
-    .dependsOn(shared)
-
 lazy val circe14 =
   (project in file("scalapact-circe-0-14"))
     .settings(commonSettings: _*)
@@ -107,17 +99,21 @@ lazy val circe14 =
         "io.circe" %% "circe-core",
         "io.circe" %% "circe-generic",
         "io.circe" %% "circe-parser"
-      ).map(_ % "0.14.1")
+      ).map(_ % circeVersion)
     )
     .dependsOn(shared)
-    .dependsOn(testShared % "test->compile")
 
 lazy val pactSpec =
   (project in file("pact-spec-tests"))
     .settings(commonSettings: _*)
     .settings(
       name := "pact-spec-tests",
-      publish / skip := true
+      publish / skip := true,
+      libraryDependencies ++= Seq(
+        "io.circe" %% "circe-core",
+        "io.circe" %% "circe-generic",
+        "io.circe" %% "circe-parser"
+      ).map(_ % circeVersion)
     )
     .dependsOn(core)
     .dependsOn(circe14)
@@ -152,7 +148,7 @@ lazy val scalaPactProject =
       publish / skip := true,
       crossScalaVersions := Nil
     )
-    .aggregate(shared, core, testShared)
+    .aggregate(shared, core)
     .aggregate(circe14)
     .aggregate(docs)
     .aggregate(pactSpec, testsWithDeps)

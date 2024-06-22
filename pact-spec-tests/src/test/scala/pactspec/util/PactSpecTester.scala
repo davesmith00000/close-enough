@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 
 trait PactSpecTester extends AnyFunSpec with Matchers {
 
-  import com.itv.scalapact.json._
+  implicit val pactReaderInstance: PactReader = new PactReader
 
   val pactSpecVersion: String
 

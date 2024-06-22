@@ -1,4 +1,4 @@
-package com.itv.scalapact.test
+package pactspec
 
 import com.itv.scalapact.shared._
 

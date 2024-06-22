@@ -1,15 +1,15 @@
-package com.itv.scalapact.circe14
+package pactspec.util
 
 import com.itv.scalapact.shared.Pact
-import com.itv.scalapact.shared.json.{ContractDeserializer, IPactReader, IPactWriter}
+import com.itv.scalapact.shared.json.{ContractDeserializer, IPactReader}
 import io.circe.parser.parse
+import pactspec.util.PactImplicits
+import pactspec.util.PactReader
 
 trait JsonInstances {
   import PactImplicits._
 
   implicit val pactReaderInstance: IPactReader = new PactReader
-
-  implicit val pactWriterInstance: IPactWriter = new PactWriter
 
   implicit val pactDeserializer: ContractDeserializer[Pact] = (jsonString: String) =>
     parse(jsonString).flatMap(_.as[Pact]) match {

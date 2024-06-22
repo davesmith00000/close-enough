@@ -1,4 +1,4 @@
-package com.itv.scalapact.circe14
+package pactspec.util
 
 import cats.syntax.functor._
 // import com.itv.scalapact.shared.Notice._

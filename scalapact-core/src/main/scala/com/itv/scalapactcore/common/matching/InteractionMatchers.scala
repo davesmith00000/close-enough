@@ -87,7 +87,7 @@ object InteractionMatchers {
         MatchOutcomeFailed(e)
 
       case Right(r) if strictMatching =>
-        BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = false)(
+        BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body)(
           r,
           pactReader
         )
@@ -148,7 +148,7 @@ object InteractionMatchers {
         MatchOutcomeFailed(e)
 
       case Right(r) if strictMatching =>
-        BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = true)(
+        BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body)(
           r,
           pactReader
         )

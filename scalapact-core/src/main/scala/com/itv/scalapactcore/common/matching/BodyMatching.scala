@@ -2,7 +2,7 @@ package com.itv.scalapactcore.common.matching
 
 import com.itv.scalapact.shared.json.IPactReader
 import com.itv.scalapact.shared.matchir.IrNodeEqualityResult.{IrNodesEqual, IrNodesNotEqual}
-import com.itv.scalapact.shared.matchir.IrNodeMatchPermissivity.{NonPermissive, Permissive}
+// import com.itv.scalapact.shared.matchir.IrNodeMatchPermissivity.{NonPermissive, Permissive}
 import com.itv.scalapact.shared.matchir._
 
 object BodyMatching {
@@ -66,9 +66,9 @@ object BodyMatching {
       headers: Option[Map[String, String]],
       expected: Option[String],
       received: Option[String],
-      bePermissive: Boolean
+      // bePermissive: Boolean
   )(implicit rules: IrNodeMatchingRules, pactReader: IPactReader): MatchOutcome = {
-    implicit val permissivity: IrNodeMatchPermissivity = if (bePermissive) Permissive else NonPermissive
+    // implicit val permissivity: IrNodeMatchPermissivity = if (bePermissive) Permissive else NonPermissive
 
     (expected, received) match {
       case (Some(ee), Some(rr))

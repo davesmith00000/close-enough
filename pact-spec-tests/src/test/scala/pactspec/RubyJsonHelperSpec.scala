@@ -1,11 +1,13 @@
-package com.itv.scalapact.circe14
+package pactspec
 
 import com.itv.scalapact.shared._
-import com.itv.scalapact.test.PactFileExamples
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import _root_.pactspec.util.PactReader
 
 class RubyJsonHelperSpec extends AnyFunSpec with Matchers {
+
+  implicit val pactReaderInstance: PactReader = new PactReader
 
   describe("Handling ruby json") {
 
