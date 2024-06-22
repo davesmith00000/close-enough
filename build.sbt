@@ -86,22 +86,6 @@ lazy val core =
     )
     .dependsOn(shared)
 
-lazy val http4s023 =
-  (project in file("scalapact-http4s-0-23"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(scala3Settings: _*)
-    .settings(
-      name := "scalapact-http4s-0-23",
-      libraryDependencies ++= Seq(
-        "org.http4s"            %% "http4s-blaze-server" % "0.23.4" exclude ("org.scala-lang.modules", "scala-xml"),
-        "org.http4s"            %% "http4s-blaze-client" % "0.23.4" exclude ("org.scala-lang.modules", "scala-xml"),
-        "org.http4s"            %% "http4s-dsl"          % "0.23.4",
-        "com.github.tomakehurst" % "wiremock"            % "2.27.2" % "test"
-      )
-    )
-    .dependsOn(shared)
-
 lazy val testShared =
   (project in file("scalapact-test-shared"))
     .settings(commonSettings: _*)
@@ -146,7 +130,6 @@ lazy val testsWithDeps =
     )
     .dependsOn(core)
     .dependsOn(circe14)
-    .dependsOn(http4s023)
 
 lazy val docs =
   (project in file("scalapact-docs"))
@@ -170,7 +153,6 @@ lazy val scalaPactProject =
       crossScalaVersions := Nil
     )
     .aggregate(shared, core, testShared)
-    .aggregate(http4s023)
     .aggregate(circe14)
     .aggregate(docs)
     .aggregate(pactSpec, testsWithDeps)
