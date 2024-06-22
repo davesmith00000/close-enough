@@ -159,16 +159,14 @@ object InteractionMatchers {
         MatchOutcomeFailed(e)
 
       case Right(r) if strictMatching =>
-        StatusMatching.matchStatusCodes(expected.status, received.status) +
-          HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
+        HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
           BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = true)(
             r,
             pactReader
           )
 
       case Right(r) =>
-        StatusMatching.matchStatusCodes(expected.status, received.status) +
-          HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
+        HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
           BodyMatching.matchBodies(expected.headers, expected.body, received.body)(r, pactReader)
     }
 

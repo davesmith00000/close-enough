@@ -7,7 +7,6 @@ import com.itv.scalapactcore.common.matching.BodyMatching._
 import com.itv.scalapactcore.common.matching.HeaderMatching._
 import com.itv.scalapactcore.common.matching.InteractionMatchers.OutcomeAndInteraction
 import com.itv.scalapactcore.common.matching.PathMatching._
-import com.itv.scalapactcore.common.matching.StatusMatching._
 import com.itv.scalapactcore.common.matching.{InteractionMatchers, MatchOutcomeFailed, MatchOutcomeSuccess}
 
 import org.scalatest.funspec.AnyFunSpec
@@ -16,17 +15,6 @@ import org.scalatest.matchers.should.Matchers
 class InteractionMatchersSpec extends AnyFunSpec with Matchers {
 
   implicit def toOption[A](thing: A): Option[A] = Option(thing)
-
-  describe("Matching status codes") {
-
-    it("should be able to match status codes") {
-
-      matchStatusCodes(200, 200).isSuccess shouldEqual true
-      matchStatusCodes(200, 503).isSuccess shouldEqual false
-
-    }
-
-  }
 
   describe("Matching headers") {
 

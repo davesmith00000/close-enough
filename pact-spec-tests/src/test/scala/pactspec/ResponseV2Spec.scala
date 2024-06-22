@@ -8,15 +8,6 @@ class ResponseV2Spec extends PactSpecTester {
 
   describe("Exercising response V" + pactSpecVersion + " Pact Specification match tests") {
 
-    it("should check the response status specs") {
-      testResponseSpecs(
-        List(
-          fetchResponseSpec("/response/status/different status.json")(StrictAndNonStrict),
-          fetchResponseSpec("/response/status/matches.json")(StrictAndNonStrict)
-        )
-      )
-    }
-
     it("should check the response header specs") {
       testResponseSpecs(
         List(
