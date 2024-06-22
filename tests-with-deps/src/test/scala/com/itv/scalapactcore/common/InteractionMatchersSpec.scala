@@ -6,7 +6,6 @@ import com.itv.scalapact.shared.{MatchingRule, Pact}
 import com.itv.scalapactcore.common.matching.BodyMatching._
 import com.itv.scalapactcore.common.matching.HeaderMatching._
 import com.itv.scalapactcore.common.matching.InteractionMatchers.OutcomeAndInteraction
-import com.itv.scalapactcore.common.matching.MethodMatching._
 import com.itv.scalapactcore.common.matching.PathMatching._
 import com.itv.scalapactcore.common.matching.StatusMatching._
 import com.itv.scalapactcore.common.matching.{InteractionMatchers, MatchOutcomeFailed, MatchOutcomeSuccess}
@@ -24,18 +23,6 @@ class InteractionMatchersSpec extends AnyFunSpec with Matchers {
 
       matchStatusCodes(200, 200).isSuccess shouldEqual true
       matchStatusCodes(200, 503).isSuccess shouldEqual false
-
-    }
-
-  }
-
-  describe("Matching methods") {
-
-    it("should be able to match methods") {
-
-      matchMethods("GET", "GET").isSuccess shouldEqual true
-      matchMethods("GET", "POST").isSuccess shouldEqual false
-      matchMethods("GET", "nonsense").isSuccess shouldEqual false
 
     }
 

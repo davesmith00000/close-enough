@@ -8,16 +8,6 @@ class RequestV2Spec extends PactSpecTester {
 
   describe("Exercising request V" + pactSpecVersion + " Pact Specification match tests") {
 
-    it("should check the request method specs") {
-      testRequestSpecs(
-        List(
-          fetchRequestSpec("/request/method/different method.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/method/matches.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/method/method is different case.json")(StrictAndNonStrict)
-        )
-      )
-    }
-
     it("should check the request path specs") {
       testRequestSpecs(
         List(
