@@ -17,9 +17,4 @@ trait JsonInstances {
       case Left(_)  => Left(s"Could not read scala-pact pact from json: $jsonString")
     }
 
-  // implicit val jvmPactDeserializer: ContractDeserializer[JvmPact] = (jsonString: String) =>
-  //   parse(jsonString).flatMap(_.as[JvmPact]) match {
-  //     case Right(a) => Right(a)
-  //     case Left(_)  => Left(s"Could not read jvm-pact pact from json: $jsonString")
-  //   }
 }

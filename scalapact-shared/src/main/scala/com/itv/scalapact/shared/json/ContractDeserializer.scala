@@ -11,6 +11,4 @@ object ContractDeserializer {
 
   implicit def pactDeserializer(implicit reader: IPactReader): ContractDeserializer[Pact] = (jsonString: String) =>
     reader.jsonStringToScalaPact(jsonString)
-  // implicit def jvmPactDeserializer(implicit reader: IPactReader): ContractDeserializer[JvmPact] =
-  //   (jsonString: String) => reader.jsonStringToJvmPact(jsonString)
 }

@@ -13,7 +13,6 @@ class PactWriter extends IPactWriter {
 
   def pactToJsonString(pact: Contract, scalaPactVersion: String): String =
     pact match {
-      // case p: JvmPact => p.asJson.spaces2
       case p: Pact =>
         val updatedMetaData: Option[PactMetaData] =
           p.metadata.orElse {
@@ -26,7 +25,4 @@ class PactWriter extends IPactWriter {
           }
         p.copy(metadata = updatedMetaData).asJson.deepDropNullValues.spaces2
     }
-
-  // def pactsForVerificationRequestToJsonString(request: PactsForVerificationRequest): String =
-  //   request.asJson.deepDropNullValues.spaces2
 }
