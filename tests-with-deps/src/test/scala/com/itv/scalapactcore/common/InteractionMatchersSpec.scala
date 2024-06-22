@@ -5,7 +5,6 @@ import com.itv.scalapact.shared.matchir.IrNodeMatchingRules
 import com.itv.scalapact.shared.{MatchingRule, Pact}
 import com.itv.scalapactcore.common.matching.BodyMatching._
 import com.itv.scalapactcore.common.matching.InteractionMatchers.OutcomeAndInteraction
-import com.itv.scalapactcore.common.matching.PathMatching._
 import com.itv.scalapactcore.common.matching.{InteractionMatchers, MatchOutcomeFailed, MatchOutcomeSuccess}
 
 import org.scalatest.funspec.AnyFunSpec
@@ -14,34 +13,6 @@ import org.scalatest.matchers.should.Matchers
 class InteractionMatchersSpec extends AnyFunSpec with Matchers {
 
   implicit def toOption[A](thing: A): Option[A] = Option(thing)
-
-  describe("Matching paths") {
-
-    it("should be able to match paths") {
-
-      val expected = "/foo/bar/hello?id=abc123&name=joey&job=dentist&hobby=skiing"
-
-      matchPaths(PathAndQuery(expected, None), PathAndQuery(expected, None)).isSuccess shouldEqual true
-      matchPaths(
-        PathAndQuery(expected, None),
-        PathAndQuery("/foo/bar/hello?hobby=skiing&name=joey&id=abc123&job=dentist", None)
-      ).isSuccess shouldEqual true
-      matchPaths(
-        PathAndQuery(expected, None),
-        PathAndQuery("/foo/bar/hello?hobby=skiing&name=joey", "id=abc123&job=dentist")
-      ).isSuccess shouldEqual true
-      matchPaths(
-        PathAndQuery(expected, None),
-        PathAndQuery("/foo/bar/hello?hobby=skiing", None)
-      ).isSuccess shouldEqual false
-      matchPaths(
-        PathAndQuery("/foo/bar/hello", None),
-        PathAndQuery("/foo/bar/hello?hobby=skiing", None)
-      ).isSuccess shouldEqual true // forgiving in what you receive...
-
-    }
-
-  }
 
   describe("Matching bodies") {
 

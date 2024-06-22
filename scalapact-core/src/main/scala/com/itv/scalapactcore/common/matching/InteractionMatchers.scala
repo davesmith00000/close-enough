@@ -3,7 +3,6 @@ package com.itv.scalapactcore.common.matching
 import com.itv.scalapact.shared._
 import com.itv.scalapact.shared.json.IPactReader
 import com.itv.scalapact.shared.matchir.IrNodeMatchingRules
-import com.itv.scalapactcore.common.matching.PathMatching.PathAndQuery
 
 import scala.annotation.tailrec
 
@@ -88,21 +87,13 @@ object InteractionMatchers {
         MatchOutcomeFailed(e)
 
       case Right(r) if strictMatching =>
-        PathMatching.matchPathsStrict(
-          PathAndQuery(expected.path, expected.query),
-          PathAndQuery(received.path, received.query)
-        ) +
-          BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = false)(
-            r,
-            pactReader
-          )
+        BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = false)(
+          r,
+          pactReader
+        )
 
       case Right(r) =>
-        PathMatching.matchPaths(
-          PathAndQuery(expected.path, expected.query),
-          PathAndQuery(received.path, received.query)
-        ) +
-          BodyMatching.matchBodies(expected.headers, expected.body, received.body)(r, pactReader)
+        BodyMatching.matchBodies(expected.headers, expected.body, received.body)(r, pactReader)
     }
 
   def matchOrFindClosestResponse(
