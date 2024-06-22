@@ -1,4 +1,4 @@
-package com.itv.scalapactcore.common.matching
+package pactspec.util
 
 object PlainTextEquality {
 

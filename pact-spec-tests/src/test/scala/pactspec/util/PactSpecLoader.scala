@@ -4,7 +4,6 @@ import io.circe._
 import io.circe.parser._
 import io.circe.generic.semiauto._
 import com.itv.scalapact.shared.utils.PactLogger
-import com.itv.scalapact.shared.{InteractionRequest, InteractionResponse}
 
 import scala.io.Source
 

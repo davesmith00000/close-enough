@@ -1,8 +1,6 @@
 package pactspec.util
 
-import com.itv.scalapactcore.common.matching.InteractionMatchers._
-import com.itv.scalapactcore.common.matching.{MatchOutcomeFailed, MatchOutcomeSuccess}
-import com.itv.scalapact.shared.{Interaction, InteractionRequest, InteractionResponse}
+import InteractionMatchers._
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 

@@ -1,4 +1,5 @@
-package com.itv.scalapactcore.common.matching
+package pactspec.util
+import pactspec.util.{MatchOutcomeFailed, MatchOutcomeSuccess, MatchOutcome}
 
 object GeneralMatcher {
 

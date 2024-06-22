@@ -1,13 +1,4 @@
-package com.itv.scalapact.shared
-
-// import com.itv.scalapact.shared.http.SslContextMap
-
-sealed trait Contract {
-  def consumer: PactActor
-  def provider: PactActor
-}
-
-// final case class JvmPact(consumer: PactActor, provider: PactActor, rawContents: String) extends Contract
+package pactspec.util
 
 final case class Pact(
     provider: PactActor,
@@ -15,9 +6,7 @@ final case class Pact(
     interactions: List[Interaction],
     _links: Option[Map[String, Link]],
     metadata: Option[PactMetaData]
-) extends Contract {
-
-  // def withoutSslHeader: Pact = copy(interactions = interactions.map(_.withoutSslHeader))
+) {
 
   def renderAsString: String =
     s"""Pact
@@ -43,9 +32,6 @@ final case class Interaction(
     response: InteractionResponse
 ) {
 
-  // def withoutSslHeader: Interaction =
-  //   copy(request = request.copy(headers = request.headers.map(_ - SslContextMap.sslContextHeaderName)))
-
   def renderAsString: String =
     s"""Interaction
        |  providerState: [${providerState.getOrElse("<none>")}]
@@ -64,9 +50,6 @@ final case class InteractionRequest(
     body: Option[String],
     matchingRules: Option[Map[String, MatchingRule]]
 ) {
-  // def withoutSslContextHeader: InteractionRequest = copy(headers = headers.map(_ - SslContextMap.sslContextHeaderName))
-
-  // def sslContextName: Option[String] = headers.flatMap(_.get(SslContextMap.sslContextHeaderName))
 
   def renderAsString: String =
     s"""Request           [${method.getOrElse("<missing method>")}]

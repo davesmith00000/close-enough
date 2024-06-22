@@ -1,4 +1,4 @@
-package com.itv.scalapactcore.common.matching
+package pactspec.util
 
 import com.itv.scalapact.shared.json.IPactReader
 import com.itv.scalapact.shared.matchir.IrNodeEqualityResult.{IrNodesEqual, IrNodesNotEqual}
@@ -58,7 +58,7 @@ object BodyMatching {
           expected,
           received,
           MatchOutcomeFailed("Body mismatch", 50),
-          (e: String, r: String) => PlainTextEquality.checkOutcome(e, r)
+          (e: String, r: String) => pactspec.util.PlainTextEquality.checkOutcome(e, r)
         )
     }
 
@@ -104,7 +104,7 @@ object BodyMatching {
           expected,
           received,
           MatchOutcomeFailed("Body mismatch", 50),
-          (e: String, r: String) => PlainTextEquality.checkOutcome(e, r)
+          (e: String, r: String) => pactspec.util.PlainTextEquality.checkOutcome(e, r)
         )
     }
   }

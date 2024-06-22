@@ -1,4 +1,4 @@
-package com.itv.scalapactcore.common.matching
+package pactspec.util
 
 sealed trait MatchOutcome {
   val isSuccess: Boolean

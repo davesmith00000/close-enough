@@ -1,6 +1,6 @@
 package pactspec
 
-import com.itv.scalapact.shared._
+import pactspec.util._
 
 object PactFileExamples {
 

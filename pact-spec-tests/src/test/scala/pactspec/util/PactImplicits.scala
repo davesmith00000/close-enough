@@ -1,13 +1,9 @@
 package pactspec.util
 
 import cats.syntax.functor._
-// import com.itv.scalapact.shared.Notice._
-import com.itv.scalapact.shared._
 import io.circe.generic.semiauto.{deriveCodec, deriveDecoder, deriveEncoder}
 import io.circe.syntax._
 import io.circe._
-
-// import scala.util.{Failure, Success, Try}
 
 object PactImplicits {
 

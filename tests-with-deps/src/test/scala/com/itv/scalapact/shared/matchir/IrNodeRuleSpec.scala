@@ -1,11 +1,9 @@
 package com.itv.scalapact.shared.matchir
 
 import com.itv.scalapact.circe14.JsonConversionFunctions
-import com.itv.scalapact.shared.MatchingRule
 import com.itv.scalapact.shared.matchir.IrNodeEqualityResult.{IrNodesEqual, IrNodesNotEqual}
 import com.itv.scalapact.shared.matchir.IrNodePath.IrNodePathEmpty
 import com.itv.scalapact.shared.matchir.IrNodeRule.{IrNodeMinArrayLengthRule, IrNodeRegexRule, IrNodeTypeRule}
-import com.itv.scalapact.shared.utils.PactLogger
 
 import scala.language.postfixOps
 import org.scalatest.funspec.AnyFunSpec
@@ -18,88 +16,6 @@ class IrNodeRuleSpec extends AnyFunSpec with Matchers {
       case _: IrNodesEqual.type => ()
       case e: IrNodesNotEqual   => fail(e.renderDifferences)
     }
-
-  describe("creating a rule set") {
-
-    it("should be able to convert pact matching rules into IrNodeRules") {
-
-      val pactRules: Option[Map[String, MatchingRule]] = Option {
-        Map(
-          ".fish"       -> MatchingRule(Some("type"), None, None),
-          ".fish.breed" -> MatchingRule(Some("regex"), Some("cod|haddock"), None),
-          ".fish.fins"  -> MatchingRule(Some("min"), None, Some(1))
-        )
-      }
-
-      val expected: IrNodeMatchingRules =
-        IrNodeMatchingRules(
-          IrNodeTypeRule(IrNodePathEmpty <~ "fish"),
-          IrNodeRegexRule("cod|haddock", IrNodePathEmpty <~ "fish" <~ "breed"),
-          IrNodeMinArrayLengthRule(1, IrNodePathEmpty <~ "fish" <~ "fins")
-        )
-
-      IrNodeMatchingRules.fromPactRules(pactRules) match {
-        case Left(e) =>
-          fail(e)
-
-        case Right(r) =>
-          r shouldEqual expected
-      }
-
-    }
-
-    it("should fail to convert pact matching rules into IrNodeRules elegantly") {
-
-      val pactRules: Option[Map[String, MatchingRule]] = Option {
-        Map(
-          ".fish"       -> MatchingRule(Some("foo"), None, None),
-          ".fish.breed" -> MatchingRule(Some("regex"), None, None),
-          ".fish.fins"  -> MatchingRule(Some("min"), None, None),
-          ".fish.fins"  -> MatchingRule(None, None, None)
-        )
-      }
-
-      IrNodeMatchingRules.fromPactRules(pactRules) match {
-        case Left(e) =>
-          PactLogger.error(e)
-          e.contains("rule") shouldEqual true
-
-        case Right(_) =>
-          fail("Unexpectedly converted the rules...")
-      }
-
-    }
-
-    it("should be able to convert more advanced pact matching rules into IrNodeRules") {
-
-      val pactRules: Option[Map[String, MatchingRule]] = Option {
-        Map(
-          ".fish[*]"       -> MatchingRule(Some("type"), None, None),
-          ".fish[2]"       -> MatchingRule(Some("type"), None, None),
-          ".fish['#text']" -> MatchingRule(Some("type"), None, None),
-          ".fish['@id']"   -> MatchingRule(Some("type"), None, None)
-        )
-      }
-
-      val expected: IrNodeMatchingRules =
-        IrNodeMatchingRules(
-          IrNodeTypeRule(IrNodePathEmpty <~ "fish" <~ "*"),
-          IrNodeTypeRule(IrNodePathEmpty <~ "fish" <~ 2),
-          IrNodeTypeRule(IrNodePathEmpty <~ "fish" text),
-          IrNodeTypeRule(IrNodePathEmpty <~ "fish" <@ "id")
-        )
-
-      IrNodeMatchingRules.fromPactRules(pactRules) match {
-        case Left(e) =>
-          fail(e)
-
-        case Right(r) =>
-          r shouldEqual expected
-      }
-
-    }
-
-  }
 
   describe("Validating a node using rules") {
 

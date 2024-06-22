@@ -78,16 +78,6 @@ lazy val shared =
       libraryDependencies ++= Seq("org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion.value)
     )
 
-lazy val core =
-  (project in file("scalapact-core"))
-    .settings(commonSettings: _*)
-    .settings(scala3Settings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "scalapact-core"
-    )
-    .dependsOn(shared)
-
 lazy val circe14 =
   (project in file("scalapact-circe-0-14"))
     .settings(commonSettings: _*)
@@ -115,7 +105,7 @@ lazy val pactSpec =
         "io.circe" %% "circe-parser"
       ).map(_ % circeVersion)
     )
-    .dependsOn(core)
+    .dependsOn(shared)
     .dependsOn(circe14)
 
 lazy val testsWithDeps =
@@ -124,7 +114,7 @@ lazy val testsWithDeps =
     .settings(
       publish / skip := true
     )
-    .dependsOn(core)
+    .dependsOn(shared)
     .dependsOn(circe14)
 
 lazy val docs =
@@ -148,10 +138,7 @@ lazy val scalaPactProject =
       publish / skip := true,
       crossScalaVersions := Nil
     )
-    .aggregate(shared, core)
-    .aggregate(circe14)
-    .aggregate(docs)
-    .aggregate(pactSpec, testsWithDeps)
+    .aggregate(shared, circe14, docs, pactSpec, testsWithDeps)
 
 import ReleaseTransformations._
 import sbtrelease.Utilities._

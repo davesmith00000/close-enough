@@ -1,10 +1,10 @@
 package com.itv.scalapact.shared.matchir
 
-import com.itv.scalapact.shared.MatchingRule
+// import pactspec.util.MatchingRule
 import com.itv.scalapact.shared.matchir.IrNodeEqualityResult.{IrNodesEqual, IrNodesNotEqual}
 import com.itv.scalapact.shared.matchir.IrNodePath.IrNodePathEmpty
 import com.itv.scalapact.shared.matchir.IrNodeRule.{IrNodeMinArrayLengthRule, IrNodeRegexRule, IrNodeTypeRule}
-import com.itv.scalapact.shared.matchir.PactPathParseResult.{PactPathParseFailure, PactPathParseSuccess}
+// import com.itv.scalapact.shared.matchir.PactPathParseResult.{PactPathParseFailure, PactPathParseSuccess}
 import com.itv.scalapact.shared.utils.PactLogger
 
 import scala.annotation.tailrec
@@ -263,100 +263,6 @@ object IrNodeMatchingRules {
   def apply(rule: IrNodeRule): IrNodeMatchingRules = IrNodeMatchingRules(List(rule), RuleProcessTracing.disabled)
 
   def apply(rules: IrNodeRule*): IrNodeMatchingRules = IrNodeMatchingRules(rules.toList, RuleProcessTracing.disabled)
-
-  private def parsePathIntoRule(pair: (String, MatchingRule)): Either[String, IrNodeMatchingRules] =
-    (IrNodePath.fromPactPath(pair._1), pair._2) match {
-      case (e: PactPathParseFailure, _) =>
-        Left(e.errorString)
-
-      case (PactPathParseSuccess(path), MatchingRule(Some("type"), None, None)) =>
-        Right(IrNodeMatchingRules(IrNodeTypeRule(path)))
-
-      case (PactPathParseSuccess(path), MatchingRule(Some("type"), None, Some(len))) =>
-        Right(
-          IrNodeMatchingRules(IrNodeTypeRule(path)) + IrNodeMatchingRules(IrNodeMinArrayLengthRule(len, path))
-        )
-
-      case (PactPathParseSuccess(path), MatchingRule(Some("type"), Some(regex), Some(len))) =>
-        Right(
-          IrNodeMatchingRules(IrNodeTypeRule(path)) + IrNodeMatchingRules(
-            IrNodeRegexRule(regex, path)
-          ) + IrNodeMatchingRules(
-            IrNodeMinArrayLengthRule(len, path)
-          )
-        )
-
-      case (PactPathParseSuccess(path), MatchingRule(Some("regex"), Some(regex), None)) =>
-        Right(IrNodeMatchingRules(IrNodeRegexRule(regex, path)))
-
-      case (PactPathParseSuccess(path), MatchingRule(Some("regex"), Some(regex), Some(len))) =>
-        Right(
-          IrNodeMatchingRules(IrNodeRegexRule(regex, path)) + IrNodeMatchingRules(
-            IrNodeMinArrayLengthRule(len, path)
-          )
-        )
-
-      case (PactPathParseSuccess(path), MatchingRule(None, Some(regex), None)) =>
-        Right(IrNodeMatchingRules(IrNodeRegexRule(regex, path)))
-
-      case (PactPathParseSuccess(path), MatchingRule(None, Some(regex), Some(len))) =>
-        Right(
-          IrNodeMatchingRules(IrNodeRegexRule(regex, path)) + IrNodeMatchingRules(
-            IrNodeMinArrayLengthRule(len, path)
-          )
-        )
-
-      case (PactPathParseSuccess(path), MatchingRule(Some("min"), None, Some(len))) =>
-        Right(IrNodeMatchingRules(IrNodeMinArrayLengthRule(len, path)))
-
-      case (PactPathParseSuccess(path), MatchingRule(Some("min"), Some(regex), Some(len))) =>
-        Right(
-          IrNodeMatchingRules(IrNodeRegexRule(regex, path)) + IrNodeMatchingRules(
-            IrNodeMinArrayLengthRule(len, path)
-          )
-        )
-
-      case (PactPathParseSuccess(path), MatchingRule(None, None, Some(len))) =>
-        Right(IrNodeMatchingRules(IrNodeMinArrayLengthRule(len, path)))
-
-      case (p, r) =>
-        Left(
-          "Failed to read rule: " + r.renderAsString + s" for path '${p.toOption.map(_.renderAsString).getOrElse("")}'"
-        )
-    }
-
-  def fromPactRules(rules: Option[Map[String, MatchingRule]]): Either[String, IrNodeMatchingRules] = {
-
-    val l: List[Either[String, IrNodeMatchingRules]] = rules match {
-      case None =>
-        List(Right(IrNodeMatchingRules.empty))
-
-      case Some(ruleMap) =>
-        ruleMap.toList.map(parsePathIntoRule)
-    }
-
-    @tailrec
-    def rec(
-        remaining: List[Either[String, IrNodeMatchingRules]],
-        errorAcc: List[String],
-        rulesAcc: IrNodeMatchingRules
-    ): Either[String, IrNodeMatchingRules] =
-      remaining match {
-        case Nil if errorAcc.nonEmpty =>
-          Left("Pact rule conversion errors:\n" + errorAcc.mkString("\n"))
-
-        case Nil =>
-          Right(rulesAcc)
-
-        case Right(x) :: xs =>
-          rec(xs, errorAcc, rulesAcc + x)
-
-        case Left(x) :: xs =>
-          rec(xs, x :: errorAcc, rulesAcc)
-      }
-
-    rec(l, Nil, IrNodeMatchingRules.empty)
-  }
 
 }
 

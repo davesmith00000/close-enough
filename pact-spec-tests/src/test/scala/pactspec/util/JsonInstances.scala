@@ -1,7 +1,6 @@
 package pactspec.util
 
-import com.itv.scalapact.shared.Pact
-import com.itv.scalapact.shared.json.{ContractDeserializer, IPactReader}
+import com.itv.scalapact.shared.json.{IPactReader}
 import io.circe.parser.parse
 import pactspec.util.PactImplicits
 import pactspec.util.PactReader

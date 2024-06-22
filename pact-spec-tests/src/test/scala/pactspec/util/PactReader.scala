@@ -1,6 +1,5 @@
 package pactspec.util
 
-import com.itv.scalapact.shared._
 import com.itv.scalapact.shared.json.IPactReader
 import com.itv.scalapact.shared.matchir.IrNode
 import io.circe.Decoder

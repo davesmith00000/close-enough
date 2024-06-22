@@ -1,9 +1,9 @@
 package pactspec
 
-import com.itv.scalapact.shared._
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import _root_.pactspec.util.PactReader
+import pactspec.util.{InteractionRequest, PactActor, Interaction, MatchingRule, InteractionResponse}
 
 class RubyJsonHelperSpec extends AnyFunSpec with Matchers {
 

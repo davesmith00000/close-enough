@@ -1,6 +1,6 @@
-package com.itv.scalapactcore.common
+package pactspec
 
-import com.itv.scalapactcore.common.matching.PlainTextEquality
+import pactspec.util.PlainTextEquality
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 

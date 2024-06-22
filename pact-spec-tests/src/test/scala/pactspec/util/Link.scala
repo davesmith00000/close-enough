@@ -1,4 +1,4 @@
-package com.itv.scalapact.shared
+package pactspec.util
 
 sealed trait Link
 

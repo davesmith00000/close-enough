@@ -1,6 +1,4 @@
-package com.itv.scalapact.shared.json
-
-import com.itv.scalapact.shared.Pact
+package pactspec.util
 
 trait ContractDeserializer[P] {
   def read(jsonString: String): Either[String, P]
@@ -9,6 +7,6 @@ trait ContractDeserializer[P] {
 object ContractDeserializer {
   def apply[P](implicit ev: ContractDeserializer[P]): ContractDeserializer[P] = ev
 
-  implicit def pactDeserializer(implicit reader: IPactReader): ContractDeserializer[Pact] = (jsonString: String) =>
+  implicit def pactDeserializer(implicit reader: PactReader): ContractDeserializer[Pact] = (jsonString: String) =>
     reader.jsonStringToScalaPact(jsonString)
 }
