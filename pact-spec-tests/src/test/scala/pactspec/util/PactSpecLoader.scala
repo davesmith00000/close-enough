@@ -1,36 +1,23 @@
 package pactspec.util
 
-import argonaut.Argonaut._
-import argonaut.{CodecJson, Json}
-import com.itv.scalapact.argonaut62.PactImplicits
+import io.circe._
+import io.circe.parser._
+import io.circe.generic.semiauto._
+import com.itv.scalapact.circe14.PactImplicits
 import com.itv.scalapact.shared.utils.PactLogger
 import com.itv.scalapact.shared.{InteractionRequest, InteractionResponse}
 
 import scala.io.Source
-import scala.language.implicitConversions
-import com.itv.scalapact.shared.utils.RightBiasEither._
 
 object PactSpecLoader {
 
   import PactImplicits._
 
-  implicit lazy val RequestSpecCodecJson: CodecJson[RequestSpec] = casecodec4(RequestSpec.apply, RequestSpec.unapply)(
-    "match",
-    "comment",
-    "expected",
-    "actual"
-  )
-
-  implicit lazy val ResponseSpecCodecJson: CodecJson[ResponseSpec] =
-    casecodec4(ResponseSpec.apply, ResponseSpec.unapply)(
-      "match",
-      "comment",
-      "expected",
-      "actual"
-    )
+  implicit lazy val RequestSpecCodecJson: Codec[RequestSpec]   = deriveCodec
+  implicit lazy val ResponseSpecCodecJson: Codec[ResponseSpec] = deriveCodec
 
   def fromResource(version: String, path: String): String = {
-    //PactLogger.message("Loading spec: " + s"/pact-specification-version-$version/testcases$path")
+    // PactLogger.message("Loading spec: " + s"/pact-specification-version-$version/testcases$path")
     val source = Source
       .fromURL(getClass.getResource(s"/pact-specification-version-$version/testcases$path"))
     val res = source.getLines().mkString("\n")
@@ -68,18 +55,16 @@ object SpecReader {
 
   type BrokenPact[I] = (Boolean, String, (I, Option[String]), (I, Option[String]))
 
-  def jsonStringToSpec[I]: String => argonaut.DecodeJson[I] => Either[String, BrokenPact[I]] = json => {
-    implicit decoder =>
-      for {
-        matches  <- JsonBodySpecialCaseHelper.extractMatches(json)
-        comment  <- JsonBodySpecialCaseHelper.extractComment(json)
-        expected <- JsonBodySpecialCaseHelper.extractInteractionRequestOrResponse[I]("expected")(json)(decoder)
-        actual   <- JsonBodySpecialCaseHelper.extractInteractionRequestOrResponse[I]("actual")(json)(decoder)
-      } yield (matches, comment, expected, actual)
-  }
+  def jsonStringToSpec[I](json: String)(implicit decoder: Decoder[I]): Either[String, BrokenPact[I]] =
+    for {
+      matches  <- JsonBodySpecialCaseHelper.extractMatches(json)
+      comment  <- JsonBodySpecialCaseHelper.extractComment(json)
+      expected <- JsonBodySpecialCaseHelper.extractInteractionRequestOrResponse[I]("expected", json, decoder)
+      actual   <- JsonBodySpecialCaseHelper.extractInteractionRequestOrResponse[I]("actual", json, decoder)
+    } yield (matches, comment, expected, actual)
 
   val jsonStringToRequestSpec: String => Either[String, RequestSpec] = json =>
-    jsonStringToSpec[InteractionRequest](json)(PactImplicits.InteractionRequestDecodeJson) match {
+    jsonStringToSpec[InteractionRequest](json)(PactImplicits.interactionRequestDecoder) match {
       case Right(bp) =>
         Right(RequestSpec(bp._1, bp._2, bp._3, bp._4))
 
@@ -88,7 +73,7 @@ object SpecReader {
     }
 
   val jsonStringToResponseSpec: String => Either[String, ResponseSpec] = json =>
-    jsonStringToSpec[InteractionResponse](json)(PactImplicits.InteractionResponseDecodeJson) match {
+    jsonStringToSpec[InteractionResponse](json)(PactImplicits.interactionResponseDecoder) match {
       case Right(bp) =>
         Right(ResponseSpec(bp._1, bp._2, bp._3, bp._4))
 
@@ -101,53 +86,77 @@ object SpecReader {
 object JsonBodySpecialCaseHelper {
 
   val extractMatches: String => Either[String, Boolean] = json =>
-    json.parse
-      .map(j => (j.hcursor --\ "match").focus.flatMap(_.bool).contains(true))
-      .leftMap(e => "Extracting 'match': " + e)
+    parse(json).map { j =>
+      j.hcursor
+        .downField("match")
+        .focus
+        .flatMap(_.asBoolean)
+        .getOrElse(false)
+    } match {
+      case Left(e) =>
+        Left("Extracting 'match': " + e)
+
+      case Right(value) =>
+        Right(value)
+    }
 
   val extractComment: String => Either[String, String] = json =>
-    json.parse
-      .map(j => (j.hcursor --\ "comment").focus.flatMap(_.string).getOrElse("<missing comment>"))
-      .leftMap(e => "Extracting 'comment': " + e)
+    parse(json).map { j =>
+      j.hcursor
+        .downField("comment")
+        .focus
+        .flatMap(_.asString)
+        .getOrElse("<missing comment>")
+    } match {
+      case Left(e) =>
+        Left("Extracting 'comment': " + e)
 
-  def extractInteractionRequestOrResponse[I]
-      : String => String => argonaut.DecodeJson[I] => Either[String, (I, Option[String])] =
-    field =>
-      json => {
-        implicit decoder =>
-          separateRequestResponseFromBody(field)(json).flatMap(RequestResponseAndBody.unapply) match {
-            case Some((Some(requestResponseMinusBody), maybeBody)) =>
-              requestResponseMinusBody.toString
-                .decodeEither[I]
-                .map(i => (i, maybeBody))
-                .leftMap(e => "Extracting 'expected or actual': " + e)
+      case Right(value) =>
+        Right(value)
+    }
 
-            case Some((None, _)) =>
-              val msg = s"Could not convert request to Json object: $json"
-              PactLogger.error(msg)
-              Left(msg)
+  def extractInteractionRequestOrResponse[I](
+      field: String,
+      json: String,
+      decoder: Decoder[I]
+  ): Either[String, (I, Option[String])] =
+    separateRequestResponseFromBody(field, json)
+      .flatMap(RequestResponseAndBody.unapply) match {
+      case Some((Some(requestResponseMinusBody), maybeBody)) =>
+        requestResponseMinusBody
+          .as[I](decoder)
+          .map(i => (i, maybeBody)) match {
+          case Left(e) =>
+            Left("Extracting 'expected or actual': " + e)
 
-            case None =>
-              val msg = s"Problem splitting request from body in: $json"
-              PactLogger.error(msg)
-              Left(msg)
-          }
-      }
-
-  private lazy val separateRequestResponseFromBody: String => String => Option[RequestResponseAndBody] = field =>
-    json =>
-      json.parseOption.flatMap(j => (j.hcursor --\ field).focus).map { requestField =>
-        val minusBody = (requestField.hcursor --\ "body").delete.undo match {
-          case ok @ Some(_) => ok
-          case None         => Some(requestField) // There wasn't a body, but there was still a request.
+          case Right(value) =>
+            Right(value)
         }
 
-        val requestBody = (requestField.hcursor --\ "body").focus.flatMap { p =>
-          if (p.isString) p.string.map(_.toString) else Option(p.toString)
-        }
+      case Some((None, _)) =>
+        val msg = s"Could not convert request to Json object: $json"
+        PactLogger.error(msg)
+        Left(msg)
 
-        RequestResponseAndBody(minusBody, requestBody)
+      case None =>
+        val msg = s"Problem splitting request from body in: $json"
+        PactLogger.error(msg)
+        Left(msg)
+    }
+
+  private def separateRequestResponseFromBody(field: String, json: String): Option[RequestResponseAndBody] =
+    parse(json).toOption.flatMap(j => j.hcursor.downField(field).focus).map { requestField =>
+      val minusBody = requestField.hcursor.downField("body").focus match {
+        case ok @ Some(_) => ok
+        case None         => Some(requestField) // There wasn't a body, but there was still a request.
       }
+
+      val requestBody = requestField.hcursor.downField("body").focus.flatMap { p =>
+        if (p.isString) p.asString else Option(p.toString)
+      }
+
+      RequestResponseAndBody(minusBody, requestBody)
+    }
 
   final case class RequestResponseAndBody(requestMinusBody: Option[Json], body: Option[String])
 

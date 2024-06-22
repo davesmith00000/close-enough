@@ -3,7 +3,6 @@ package com.itv.scalapactcore.common
 import com.itv.scalapact.json._
 import com.itv.scalapact.shared.matchir.IrNodeMatchingRules
 
-import scala.language.implicitConversions
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 

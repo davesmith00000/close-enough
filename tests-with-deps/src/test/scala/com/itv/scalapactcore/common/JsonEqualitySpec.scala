@@ -1,11 +1,11 @@
 package com.itv.scalapactcore.common
 
 import io.circe._
+import io.circe.parser._
 import com.itv.scalapact.circe14.JsonConversionFunctions
 import com.itv.scalapact.shared.matchir.IrNodeEqualityResult.{IrNodesEqual, IrNodesNotEqual}
 import com.itv.scalapact.shared.matchir._
 
-import scala.language.implicitConversions
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -31,9 +31,9 @@ class JsonEqualitySpec extends AnyFunSpec with Matchers {
       a == b shouldEqual false
 
       withClue("optional") {
-        val personA = a.parseOption
-        val personB = b.parseOption
-        val personC = c.parseOption
+        val personA = parse(a).toOption
+        val personB = parse(b).toOption
+        val personC = parse(c).toOption
 
         check(personA.get =~ personB.get)
         (personA.get =~ personC.get).isEqual shouldEqual false
@@ -48,8 +48,8 @@ class JsonEqualitySpec extends AnyFunSpec with Matchers {
       a == b shouldEqual false
 
       withClue("optional") {
-        val personA = a.parseOption
-        val personB = b.parseOption
+        val personA = parse(a).toOption
+        val personB = parse(b).toOption
 
         check(personA.get =~ personB.get)
       }
@@ -61,12 +61,12 @@ class JsonEqualitySpec extends AnyFunSpec with Matchers {
       val a = """{"name":"joe","age":23}"""
       val b = """[{"name":"joe","age":23}]"""
 
-      (a.parseOption.get =~ b.parseOption.get).isEqual shouldEqual false
+      (parse(a).toOption.get =~ parse(b).toOption.get).isEqual shouldEqual false
 
       val c = """{"id":"123"}"""
       val d = """{"id":123}"""
 
-      (c.parseOption.get =~ d.parseOption.get).isEqual shouldEqual false
+      (parse(c).toOption.get =~ parse(d).toOption.get).isEqual shouldEqual false
     }
 
     it("should be able to handle / ignore extra / missing fields") {
@@ -74,8 +74,8 @@ class JsonEqualitySpec extends AnyFunSpec with Matchers {
       val a = """{"name":"joe","age":23}"""
       val b = """{"age":23,"name":"joe","location":"London"}"""
 
-      val personA = a.parseOption
-      val personB = b.parseOption
+      val personA = parse(a).toOption
+      val personB = parse(b).toOption
 
       check(personA.get =~ personB.get)
       (personB.get =~ personA.get).isEqual shouldEqual false
@@ -114,7 +114,7 @@ class JsonEqualitySpec extends AnyFunSpec with Matchers {
         """.stripMargin
 
       withClue("Equal but fields out of order") {
-        check(a.parseOption.get =~ b.parseOption.get)
+        check(parse(a).toOption.get =~ parse(b).toOption.get)
       }
 
       val c =
@@ -135,8 +135,8 @@ class JsonEqualitySpec extends AnyFunSpec with Matchers {
         """.stripMargin
 
       withClue("Additional / missing data") {
-        check(a.parseOption.get =~ c.parseOption.get)
-        (c.parseOption.get =~ a.parseOption.get).isEqual shouldEqual false
+        check(parse(a).toOption.get =~ parse(c).toOption.get)
+        (parse(c).toOption.get =~ parse(a).toOption.get).isEqual shouldEqual false
       }
 
     }
@@ -156,7 +156,7 @@ class JsonEqualitySpec extends AnyFunSpec with Matchers {
           |}}
         """.stripMargin
 
-      check(a.parseOption.get =~ b.parseOption.get)
+      check(parse(a).toOption.get =~ parse(b).toOption.get)
     }
 
   }
