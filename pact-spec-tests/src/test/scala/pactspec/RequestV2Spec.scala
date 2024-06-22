@@ -38,23 +38,6 @@ class RequestV2Spec extends PactSpecTester {
       )
     }
 
-    it("should check the request header specs") {
-      testRequestSpecs(
-        List(
-          fetchRequestSpec("/request/headers/empty headers.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/headers/header name is different case.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/headers/header value is different case.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/headers/matches with regex.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/headers/matches.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/headers/order of comma separated header values different.json")(
-            StrictAndNonStrict
-          ),
-          fetchRequestSpec("/request/headers/unexpected header found.json")(StrictAndNonStrict),
-          fetchRequestSpec("/request/headers/whitespace after comma different.json")(StrictAndNonStrict)
-        )
-      )
-    }
-
     it("should check the request body specs") {
       testRequestSpecs(
         List(

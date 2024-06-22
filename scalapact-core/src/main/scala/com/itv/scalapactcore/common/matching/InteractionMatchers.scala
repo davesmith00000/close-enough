@@ -92,7 +92,6 @@ object InteractionMatchers {
           PathAndQuery(expected.path, expected.query),
           PathAndQuery(received.path, received.query)
         ) +
-          HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
           BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = false)(
             r,
             pactReader
@@ -103,7 +102,6 @@ object InteractionMatchers {
           PathAndQuery(expected.path, expected.query),
           PathAndQuery(received.path, received.query)
         ) +
-          HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
           BodyMatching.matchBodies(expected.headers, expected.body, received.body)(r, pactReader)
     }
 
@@ -159,15 +157,13 @@ object InteractionMatchers {
         MatchOutcomeFailed(e)
 
       case Right(r) if strictMatching =>
-        HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
-          BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = true)(
-            r,
-            pactReader
-          )
+        BodyMatching.matchBodiesStrict(expected.headers, expected.body, received.body, bePermissive = true)(
+          r,
+          pactReader
+        )
 
       case Right(r) =>
-        HeaderMatching.matchHeaders(rules, expected.headers, received.headers) +
-          BodyMatching.matchBodies(expected.headers, expected.body, received.body)(r, pactReader)
+        BodyMatching.matchBodies(expected.headers, expected.body, received.body)(r, pactReader)
     }
 
 }

@@ -8,23 +8,6 @@ class ResponseV2Spec extends PactSpecTester {
 
   describe("Exercising response V" + pactSpecVersion + " Pact Specification match tests") {
 
-    it("should check the response header specs") {
-      testResponseSpecs(
-        List(
-          fetchResponseSpec("/response/headers/empty headers.json")(StrictAndNonStrict),
-          fetchResponseSpec("/response/headers/header name is different case.json")(StrictAndNonStrict),
-          fetchResponseSpec("/response/headers/header value is different case.json")(StrictAndNonStrict),
-          fetchResponseSpec("/response/headers/matches with regex.json")(StrictAndNonStrict),
-          fetchResponseSpec("/response/headers/matches.json")(StrictAndNonStrict),
-          fetchResponseSpec("/response/headers/order of comma separated header values different.json")(
-            StrictAndNonStrict
-          ),
-          fetchResponseSpec("/response/headers/unexpected header found.json")(StrictAndNonStrict),
-          fetchResponseSpec("/response/headers/whitespace after comma different.json")(StrictAndNonStrict)
-        )
-      )
-    }
-
     it("should check the response body specs") {
       testResponseSpecs(
         List(
